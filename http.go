@@ -7,7 +7,12 @@ import (
 func Serve(host string, port string) {
 	r := gin.Default()
 	r.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(200, QueryByRandom())
+		author, exist := ctx.GetQuery("author")
+		if !exist {
+			ctx.JSON(200, QueryRandom())
+		} else {
+			ctx.JSON(200, QueryByAuthorRandom(author))
+		}
 	})
 	r.Run(host + ":" + port)
 }

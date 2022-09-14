@@ -85,7 +85,7 @@ func QueryByContent(content string) Quote {
 	return res
 }
 
-func QueryByAuthor(author string) []Quote {
+func QueryByAuthorAll(author string) []Quote {
 
 	rows, err := db.Query(fmt.Sprintf("SELECT uid, content FROM quote WHERE \"author\"=\"%s\"", author))
 	if err != nil {
@@ -105,7 +105,24 @@ func QueryByAuthor(author string) []Quote {
 	return res
 }
 
-func QueryByRandom() Quote {
+func QueryByAuthorRandom(author string) Quote {
+	rows, err := db.Query(fmt.Sprintf("SELECT uid, content FROM quote WHERE \"author\"=\"%s\" ORDER BY RANDOM() limit 1", author))
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	var res Quote
+	for rows.Next() {
+		err = rows.Scan(&res.Uid, &res.Content)
+		if err != nil {
+			panic(err)
+		}
+		res.Author = author
+	}
+	return res
+}
+
+func QueryRandom() Quote {
 	rows, err := db.Query("SELECT uid, content, author FROM quote ORDER BY RANDOM() limit 1")
 	if err != nil {
 		panic(err)
